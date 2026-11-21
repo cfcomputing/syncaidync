@@ -1,0 +1,17 @@
+# Build output
+target/
+
+# Local-only handoff notes and tools. Never commit this folder.
+.local/
+
+# Workspace notes and attachments created locally when working on this repo
+/.syncaidync/
+
+# Scratch space used by the vendor scripts
+.vendor-tmp/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
+*.log

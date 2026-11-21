@@ -1,0 +1,283 @@
+/* Files: tree + editor split inside the workspace tool. */
+
+dync-tool-files {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+dync-tool-files .files-split {
+  --gutter: 5px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: var(--files-tree-w, 260px) var(--gutter) minmax(160px, 1fr);
+  /* One row capped at the panel height, so the tree and the editor scroll inside it. */
+  grid-template-rows: minmax(0, 1fr);
+}
+
+dync-tool-files .files-tree-pane {
+  min-width: 160px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+
+dync-tool-files .files-filter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+dync-tool-files .files-filter input { width: 100%; font-size: 0.85rem; }
+
+dync-tool-files .files-tree,
+dync-tool-files .files-find {
+  flex: 1;
+  overflow: auto;
+  padding: 0.35rem 0;
+  outline: none;
+}
+
+dync-tool-files button.ft-row,
+dync-tool-files button.ff-row {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0.2rem 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+dync-tool-files button.ft-row:hover,
+dync-tool-files button.ff-row:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+dync-tool-files button.ft-row[aria-selected="true"],
+dync-tool-files button.ff-row[aria-selected="true"] {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent-ink);
+}
+
+dync-tool-files button.ft-row.is-ignored { color: var(--text-muted); font-style: italic; }
+
+dync-tool-files .ft-twist {
+  width: 1rem;
+  flex: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+dync-tool-files .ft-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+dync-tool-files .files-gutter { cursor: col-resize; position: relative; }
+dync-tool-files .files-gutter::after { content: ""; position: absolute; inset: 0 -2px; }
+dync-tool-files .files-gutter:hover,
+dync-tool-files.is-splitting .files-gutter {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+dync-tool-files .files-editor-pane {
+  min-width: 160px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+dync-tool-files .files-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.4rem;
+  padding: 0.4rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+}
+
+dync-tool-files .files-path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+dync-tool-files .files-dirty {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--accent);
+  flex: none;
+}
+
+dync-tool-files .files-stale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.82rem;
+  background: color-mix(in srgb, var(--warn) 16%, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--warn) 40%, var(--border));
+}
+dync-tool-files .files-stale[hidden] { display: none; }
+dync-tool-files .files-stale span { flex: 1 1 8rem; }
+
+dync-tool-files .files-mode {
+  display: inline-flex;
+  gap: 0.15rem;
+  flex: none;
+}
+dync-tool-files .files-mode .active {
+  color: var(--accent-ink);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+dync-tool-files .files-md-view {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+}
+dync-tool-files .files-md-view[hidden] { display: none; }
+dync-tool-files .files-md-error {
+  padding: 1.25rem 1.5rem;
+  color: var(--warn);
+  font-size: 0.9rem;
+}
+
+dync-tool-files .files-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  min-width: 0;
+}
+
+dync-tool-files .files-cm { flex: 1; min-height: 0; overflow: hidden; }
+dync-tool-files .files-cm[hidden] { display: none; }
+dync-tool-files .files-md-view { flex: 1; }
+
+dync-tool-files .files-margin-pane {
+  flex: 0 0 min(22rem, 42%);
+  min-width: 16rem;
+  max-width: 28rem;
+  border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+dync-tool-files .files-margin-pane[hidden] { display: none; }
+dync-tool-files .files-margin-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+}
+dync-tool-files .files-margin-head strong { flex: 1; min-width: 4rem; }
+dync-tool-files .files-margin-label {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.5rem 0.65rem 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+dync-tool-files .files-margin-label input,
+dync-tool-files .files-margin-label textarea {
+  width: 100%;
+  font: 0.88rem/1.45 var(--font);
+  color: var(--text);
+}
+dync-tool-files .files-margin-label textarea {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  resize: vertical;
+  min-height: 10rem;
+}
+dync-tool-files .files-margin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.65rem;
+  align-items: center;
+}
+dync-tool-files .files-margin-attach {
+  display: inline-flex;
+  cursor: pointer;
+}
+dync-tool-files .files-margin-body {
+  flex: 1;
+  overflow: auto;
+}
+dync-tool-files .files-margin-pane > .muted {
+  padding: 0 0.65rem 0.75rem;
+}
+
+dync-tool-files .cm-margin-gutter {
+  width: 1.1rem;
+}
+dync-tool-files .cm-margin-mark {
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
+  font: 700 0.65rem/1 var(--font);
+  cursor: pointer;
+}
+dync-tool-files .cm-margin-mark:hover {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+dync-tool-files .cm-margin-mark.is-outdated {
+  background: color-mix(in srgb, var(--warn) 16%, transparent);
+  color: var(--warn);
+}
+dync-tool-files .files-cm .cm-editor {
+  height: 100%;
+  background: transparent;
+  font: 13px/1.45 var(--font-mono);
+}
+dync-tool-files .files-cm .cm-scroller { font: 13px/1.45 var(--font-mono); }
+dync-tool-files .files-cm .cm-gutters {
+  background: transparent;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border);
+}
+
+dync-tool-files .files-empty,
+dync-tool-files .files-error {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+dync-tool-files .files-error { color: var(--warn); }

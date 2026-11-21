@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>SyncAiDync app icon</title>
+  <linearGradient id="sync" gradientUnits="userSpaceOnUse" x1="307" y1="307" x2="717" y2="717">
+    <stop offset="0" stop-color="#a78bfa"/>
+    <stop offset="100%" stop-color="#818cf8"/>
+  </linearGradient>
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="#0b0716"/>
+  <path d="M775 389 A290 290 0 0 1 389 775
+           M249 635 A290 290 0 0 1 635 249"
+        fill="none" stroke="url(#sync)" stroke-width="60" stroke-linecap="round"/>
+  <path d="M391 415 L488 512 L391 609 M536 609 H633"
+        fill="none" stroke="#e8e8ed" stroke-width="60" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

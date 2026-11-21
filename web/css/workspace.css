@@ -1,0 +1,441 @@
+/* Workspace view: panels, tabs, solo pop-out. The session controls sit in the top bar. */
+
+dync-workspace {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 0;
+}
+
+.ws-header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  border-bottom: var(--border-width) solid var(--border);
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+  min-height: 48px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.topbar-session .sc-dot,
+.ws-header .sc-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+.topbar-session .sc-dot[data-state="blocked"],
+.ws-header .sc-dot[data-state="blocked"] { background: var(--warn); }
+.topbar-session .sc-dot[data-state="ready"],
+.ws-header .sc-dot[data-state="ready"] { background: var(--accent); }
+.topbar-session .sc-dot[data-state="working"],
+.ws-header .sc-dot[data-state="working"] { background: var(--ok); }
+.topbar-session .sc-dot[data-state="ended"],
+.ws-header .sc-dot[data-state="ended"] {
+  background: color-mix(in srgb, var(--text-muted) 55%, transparent);
+}
+
+.ws-state {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ws-title {
+  font-weight: 650;
+  font-size: 0.98rem;
+  padding: 0.15rem 0.35rem;
+  max-width: min(28rem, 40vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ws-title-input {
+  font-weight: 650;
+  font-size: 0.98rem;
+  padding: 0.25rem 0.45rem;
+  min-width: 12rem;
+}
+
+.ws-meta,
+.ws-usage {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.ws-header [data-action="back"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ws-header [data-action="back"] svg,
+.ws-solo-header [data-action="close-solo"] svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ws-header [data-action="reset"] {
+  margin-left: auto;
+}
+
+.ws-canvas {
+  flex: 1;
+  min-height: 0;
+}
+
+.ws-gone {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.ws-gone[hidden] {
+  display: none !important;
+}
+
+/* Panels */
+
+dync-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: var(--border-width) solid var(--border);
+  /* The opacity in effect: Active, or Inactive while another panel is active. */
+  --panel-alpha: var(--panel-opacity, 1);
+}
+
+/* While you work in one panel, the others use their Inactive opacity. */
+dync-workspace.has-active-panel dync-panel:not(.is-active),
+dync-panel.is-preview-idle {
+  --panel-alpha: var(--panel-idle-opacity, var(--panel-opacity, 1));
+}
+
+/* The panel's own fill follows its opacity (100% is solid) instead of the shared card glass. */
+dync-panel.card {
+  background-color: color-mix(in srgb, var(--surface) calc(var(--panel-alpha) * 100%), transparent);
+  transition: background-color 0.18s ease;
+}
+
+/* The panel you are working in: an accent edge and a soft ring on top of its opacity. */
+dync-panel.is-active {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow: var(--ring), var(--shadow-sm), var(--edge-light);
+}
+
+dync-panel.is-active .panel-header {
+  background: color-mix(in srgb, var(--accent) 7%, color-mix(in srgb, var(--surface) 80%, transparent));
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.45rem;
+  cursor: grab;
+  flex: 0 0 auto;
+  border-bottom: var(--border-width) solid var(--border);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.panel-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.panel-tab {
+  position: relative;
+  padding: 0.35rem 0.65rem;
+  border: 0;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.panel-tab:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  transform: none;
+  filter: none;
+}
+
+.panel-tab.active {
+  color: var(--accent-ink);
+}
+
+.panel-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0.55rem;
+  right: 0.55rem;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.panel-tabs.drop-target {
+  outline: 1px dashed var(--accent);
+  outline-offset: -2px;
+}
+
+.panel-tab.drop-before {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.panel-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: var(--panel-alpha, 1);
+  transition: opacity 0.18s ease;
+}
+
+.panel-body.drop-body {
+  outline: 2px dashed var(--accent);
+  outline-offset: -4px;
+}
+
+.panel-body > .tool,
+.panel-body > [data-tool] {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-body > [hidden] {
+  display: none !important;
+}
+
+.panel-popped {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  gap: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.panel-popped[hidden] {
+  display: none !important;
+}
+
+dync-tool-terminal,
+dync-tool-files,
+dync-tool-changes,
+dync-tool-session {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+dync-tool-terminal dync-terminal {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+}
+
+.tool-placeholder {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.tool-placeholder h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.tool-placeholder p {
+  margin: 0;
+}
+
+.tab-drag-chip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100001;
+  pointer-events: none;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.78rem;
+  font-weight: 650;
+  box-shadow: var(--shadow-sm);
+}
+
+.workspace-solo .ws-solo-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ws-solo-header [data-action="close-solo"] {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.shell-main > dync-workspace {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+/* Session tool (WO-17) */
+dync-tool-session {
+  display: block;
+  overflow: auto;
+  min-height: 0;
+}
+.sess {
+  max-width: 40rem;
+  padding: 1rem 1.1rem 1.4rem;
+  display: grid;
+  gap: 1.2rem;
+}
+.sess-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+.sess-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+.sess-section h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.sess-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 8.25rem 1fr;
+  gap: 0.35rem 0.8rem;
+}
+.sess-fact { display: contents; }
+.sess-facts dt {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+.sess-facts dd {
+  margin: 0;
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  min-width: 0;
+}
+.sess-path {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.sess-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+.sess-list li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+}
+.sess-list-scroll {
+  max-height: 14rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.35rem;
+}
+.sess-list time {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+.sess-meters { display: grid; gap: 0.65rem; }
+.sess-meter-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  margin-bottom: 0.15rem;
+}
+.sess-meter-bar {
+  height: 4px;
+  background: color-mix(in srgb, var(--text-muted) 14%, transparent);
+}
+.sess-meter-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.sess-meter[data-warn] .sess-meter-bar > span { background: var(--warn); }
+.sess-send textarea {
+  width: 100%;
+  min-height: 4.25rem;
+  resize: vertical;
+}
+.sess-send-actions {
+  margin-top: 0.35rem;
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+.muted.sm {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}

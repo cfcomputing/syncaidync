@@ -1,0 +1,36 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        run: |
+          # rust-toolchain.toml names the version; this installs it with its components.
+          rustup toolchain install
+          rustc --version
+      - name: Install Node
+        run: |
+          # Runners ship Node; pin a known-good major when possible.
+          if command -v node >/dev/null 2>&1; then
+            node --version
+          else
+            echo "Node is required for web/test" >&2
+            exit 1
+          fi
+      - name: Check repository
+        run: scripts/check.sh

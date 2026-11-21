@@ -1,0 +1,217 @@
+/*
+ * Rendered markdown: Files View, Changes View, pull request descriptions and margins.
+ * Everything is scoped to .md-body and drawn from the design tokens.
+ */
+
+.md-body {
+  --md-gap: 1em;
+  --md-heading-gap: 1.75em;
+  --md-code-fill: var(--surface-2);
+  --md-quiet-fill: var(--surface);
+  --md-rule: var(--border-width) solid var(--border);
+  --md-corner: var(--radius-sm);
+
+  box-sizing: border-box;
+  width: min(100%, 74ch);
+  margin: 0 auto;
+  padding: 1.5rem clamp(0.75rem, 4%, 1.75rem) 2.5rem;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.62;
+  overflow-wrap: anywhere;
+}
+
+/* Vertical rhythm: blocks carry no outer margins; siblings get one gap between them. */
+
+.md-body :where(h1, h2, h3, h4, h5, h6, p, ul, ol, dl, blockquote, pre, table, hr, figure) {
+  margin: 0;
+}
+
+.md-body > :not(:first-child),
+.md-body blockquote > :not(:first-child),
+.md-body li > :where(p, ul, ol, pre, blockquote):not(:first-child) {
+  margin-top: var(--md-gap);
+}
+
+/* Headings */
+
+.md-body :where(h1, h2, h3, h4, h5, h6) {
+  font-weight: 640;
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+
+.md-body > :where(h1, h2, h3, h4, h5, h6):not(:first-child) {
+  margin-top: var(--md-heading-gap);
+}
+
+.md-body h1 {
+  font-size: 1.75em;
+  padding-bottom: 0.25em;
+  border-bottom: var(--md-rule);
+}
+
+.md-body h2 {
+  font-size: 1.36em;
+  padding-bottom: 0.2em;
+  border-bottom: var(--md-rule);
+}
+
+.md-body h3 { font-size: 1.15em; }
+.md-body h4 { font-size: 1em; }
+
+.md-body :where(h5, h6) {
+  font-size: 0.92em;
+  color: var(--text-muted);
+}
+
+/* Inline text */
+
+.md-body a {
+  color: var(--accent-ink);
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-ink) 45%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.md-body a:hover,
+.md-body a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.md-body :where(strong, b) { font-weight: 650; }
+.md-body del { color: var(--text-muted); }
+
+.md-body kbd {
+  padding: 0 0.35em;
+  border: var(--md-rule);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font: 0.85em var(--font-mono);
+}
+
+/* Lists, including GitHub task lists */
+
+.md-body :where(ul, ol) {
+  padding-left: 1.6em;
+}
+
+.md-body li:not(:first-child) {
+  margin-top: 0.25em;
+}
+
+.md-body li::marker {
+  color: var(--text-muted);
+}
+
+.md-body li:has(> input[type="checkbox"]) {
+  list-style: none;
+}
+
+.md-body li > input[type="checkbox"] {
+  margin: 0 0.4em 0 -1.3em;
+  accent-color: var(--accent-ink);
+  vertical-align: -0.1em;
+}
+
+/* Quotes and rules */
+
+.md-body blockquote {
+  padding: 0.5em 1em;
+  border-left: 3px solid color-mix(in srgb, var(--accent-ink) 70%, var(--border));
+  border-radius: 0 var(--md-corner) var(--md-corner) 0;
+  background: var(--md-quiet-fill);
+  color: var(--text-muted);
+}
+
+.md-body hr {
+  height: 0;
+  border: 0;
+  border-top: var(--md-rule);
+}
+
+/* Code */
+
+.md-body :where(code, pre, samp) {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+.md-body :not(pre) > code {
+  padding: 0.1em 0.32em;
+  border-radius: 5px;
+  background: var(--md-code-fill);
+}
+
+.md-body pre {
+  padding: 0.85em 1em;
+  border: var(--md-rule);
+  border-radius: var(--md-corner);
+  background: var(--md-code-fill);
+  line-height: 1.5;
+  overflow: auto;
+  overflow-wrap: normal;
+  tab-size: 4;
+}
+
+.md-body pre > code {
+  font-size: 1em;
+}
+
+/* Tables scroll sideways instead of widening the page. */
+
+.md-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  border-spacing: 0;
+  font-size: 0.9em;
+}
+
+.md-body :where(th, td) {
+  padding: 0.4em 0.8em;
+  border: var(--md-rule);
+  border-width: 0 0 var(--border-width) 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.md-body thead th {
+  background: var(--md-code-fill);
+  font-weight: 620;
+}
+
+.md-body tbody tr:nth-child(2n) {
+  background: var(--md-quiet-fill);
+}
+
+/* Media */
+
+.md-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--md-corner);
+}
+
+/* Tighter variant for margins and other small panels. */
+
+.md-body.md-body-compact {
+  --md-gap: 0.65em;
+  --md-heading-gap: 1em;
+  width: auto;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.md-body-compact :where(h1, h2) {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.md-body-compact :where(h1, h2, h3) {
+  font-size: 1.12em;
+}

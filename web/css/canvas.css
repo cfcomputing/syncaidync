@@ -1,0 +1,220 @@
+/* Free / absolute canvas: items, handles, drag chrome. */
+
+dync-canvas {
+  display: block;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  /* Gutter outside the scrollport so edge handles stay grabbable. */
+  --canvas-inset: 12px;
+}
+
+dync-canvas[hidden] {
+  display: none !important;
+}
+
+.canvas-viewport {
+  position: absolute;
+  inset: var(--canvas-inset);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.canvas-surface {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.canvas-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  will-change: transform;
+  transform: translate(var(--cx, 0px), var(--cy, 0px));
+  z-index: var(--cz, 1);
+  width: var(--cw, 320px);
+  height: var(--ch, 240px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  dync-canvas:not(.is-busy) .canvas-item {
+    transition: transform 0.28s var(--ease-out), width 0.28s var(--ease-out), height 0.28s var(--ease-out);
+  }
+}
+
+.canvas-item.is-dragging,
+.canvas-item.is-resizing {
+  opacity: 0.97;
+  box-shadow: var(--shadow-lg, 0 18px 40px color-mix(in srgb, var(--text) 22%, transparent));
+  transition: none !important;
+  z-index: 100000;
+}
+
+.canvas-item.is-dragging {
+  cursor: grabbing;
+}
+
+.canvas-item > dync-session-card,
+.canvas-item > dync-session-strip,
+.canvas-item > dync-panel {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.canvas-item > dync-session-card {
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.canvas-item > dync-session-card dync-terminal {
+  min-height: 0;
+  height: 100%;
+}
+
+/* Resize handles */
+
+.canvas-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.canvas-handle {
+  position: absolute;
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+/* A marker shows only while the pointer is on its own edge or corner, or while dragging it. */
+dync-canvas:not(.is-busy) .canvas-handle:hover,
+.canvas-handle.is-grabbed,
+.canvas-handle:focus-visible {
+  opacity: 1;
+}
+
+.canvas-handle::after {
+  content: "";
+  display: block;
+  background: var(--accent);
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+.canvas-handle[data-edge="n"],
+.canvas-handle[data-edge="s"] {
+  left: 12px;
+  right: 12px;
+  height: 12px;
+  cursor: ns-resize;
+}
+
+.canvas-handle[data-edge="n"] { top: 0; }
+.canvas-handle[data-edge="s"] { bottom: 0; }
+
+.canvas-handle[data-edge="n"]::after,
+.canvas-handle[data-edge="s"]::after {
+  height: 3px;
+  margin: 4.5px 18%;
+}
+
+.canvas-handle[data-edge="e"],
+.canvas-handle[data-edge="w"] {
+  top: 12px;
+  bottom: 12px;
+  width: 12px;
+  cursor: ew-resize;
+}
+
+.canvas-handle[data-edge="e"] { right: 0; }
+.canvas-handle[data-edge="w"] { left: 0; }
+
+.canvas-handle[data-edge="e"]::after,
+.canvas-handle[data-edge="w"]::after {
+  width: 3px;
+  height: 100%;
+  margin: 18% 4.5px;
+  max-height: calc(100% - 36%);
+}
+
+.canvas-handle[data-edge="nw"],
+.canvas-handle[data-edge="ne"],
+.canvas-handle[data-edge="sw"],
+.canvas-handle[data-edge="se"] {
+  width: 14px;
+  height: 14px;
+}
+
+.canvas-handle[data-edge="nw"] { top: 0; left: 0; cursor: nwse-resize; }
+.canvas-handle[data-edge="ne"] { top: 0; right: 0; cursor: nesw-resize; }
+.canvas-handle[data-edge="sw"] { bottom: 0; left: 0; cursor: nesw-resize; }
+.canvas-handle[data-edge="se"] { bottom: 0; right: 0; cursor: nwse-resize; }
+
+.canvas-handle[data-edge="nw"]::after,
+.canvas-handle[data-edge="ne"]::after,
+.canvas-handle[data-edge="sw"]::after,
+.canvas-handle[data-edge="se"]::after {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  margin: 3px;
+}
+
+.canvas-size-chip {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent, var(--accent-ink));
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.canvas-size-chip[hidden] {
+  display: none !important;
+}
+
+/* Global drag/resize guards */
+
+body.is-dragging,
+body.is-resizing {
+  user-select: none !important;
+  cursor: grabbing;
+}
+
+body.is-resizing {
+  cursor: var(--resize-cursor, nwse-resize);
+}
+
+body.is-resizing[data-resize-cursor="ew-resize"] { cursor: ew-resize; }
+body.is-resizing[data-resize-cursor="ns-resize"] { cursor: ns-resize; }
+body.is-resizing[data-resize-cursor="nwse-resize"] { cursor: nwse-resize; }
+body.is-resizing[data-resize-cursor="nesw-resize"] { cursor: nesw-resize; }
+
+body.is-dragging dync-terminal,
+body.is-resizing dync-terminal,
+body.is-dragging .sc-title-input,
+body.is-resizing .sc-title-input {
+  pointer-events: none !important;
+}

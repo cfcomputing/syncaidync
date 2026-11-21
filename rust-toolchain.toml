@@ -1,0 +1,5 @@
+# The Rust release that scripts/check.sh and CI run. Bump it on purpose, after clippy is clean.
+[toolchain]
+channel = "1.100.0"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
