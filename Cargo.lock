@@ -501,7 +501,7 @@ dependencies = [
 
 [[package]]
 name = "syncaidync"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bytes",
  "futures-util",
@@ -524,7 +524,7 @@ dependencies = [
 
 [[package]]
 name = "syncaidync-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Highlight TypeScript, TSX, and JSX files with their own grammar. Long `.ts` and `.tsx` files
+  no longer lose their colours partway down.
+
 ## 0.1.0
 
 - Start and resume Claude Code, Codex, Pi, and Cursor Agent sessions in local terminals.
