@@ -45,6 +45,11 @@ function uuid() {
 
 const LANGS = {
   javascript,
+  // Type annotations and JSX are errors to the plain JavaScript grammar, and on a long file the
+  // recovery leaves most of it the wrong colour.
+  typescript: () => javascript({ typescript: true }),
+  tsx: () => javascript({ typescript: true, jsx: true }),
+  jsx: () => javascript({ jsx: true }),
   rust,
   python,
   json,

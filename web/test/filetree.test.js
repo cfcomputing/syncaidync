@@ -52,7 +52,10 @@ describe("flatten", () => {
 describe("languageFor", () => {
   it("maps extensions and special names", () => {
     assert.equal(languageFor("src/main.rs"), "rust");
-    assert.equal(languageFor("app.tsx"), "javascript");
+    assert.equal(languageFor("app.js"), "javascript");
+    assert.equal(languageFor("app.ts"), "typescript");
+    assert.equal(languageFor("app.tsx"), "tsx");
+    assert.equal(languageFor("app.jsx"), "jsx");
     assert.equal(languageFor("Dockerfile"), "shell");
     assert.equal(languageFor("Makefile"), "shell");
     assert.equal(languageFor("config.toml"), "toml");
