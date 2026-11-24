@@ -10,8 +10,28 @@ terminal, file editor, changes review, and close-out.
 
 ## Install and run
 
-You need macOS or Linux, a stable Rust toolchain, Git, and at least one supported agent CLI
-installed and signed in. GitHub pull requests require a signed-in GitHub CLI (`gh`).
+You need macOS 13 or newer or Linux, Git, and at least one supported agent CLI installed and
+signed in. GitHub pull requests require a signed-in GitHub CLI (`gh`).
+
+**Prebuilt binary.** Each release has a single `syncaidync` binary with the web UI built in: a
+universal build for macOS (Apple silicon and Intel), and static builds for Linux on x86_64
+and aarch64. Pick yours and put it on your `PATH`:
+
+```sh
+asset=syncaidync-macos-universal   # or syncaidync-linux-x86_64, syncaidync-linux-aarch64
+curl -fLO "https://github.com/cfcomputing/syncaidync/releases/latest/download/$asset.tar.gz"
+curl -fLO "https://github.com/cfcomputing/syncaidync/releases/latest/download/$asset.tar.gz.sha256"
+shasum -a 256 -c "$asset.tar.gz.sha256"
+tar -xzf "$asset.tar.gz" syncaidync
+mkdir -p ~/.local/bin && mv syncaidync ~/.local/bin/
+syncaidync
+```
+
+The macOS binary is ad-hoc signed, not notarized. Downloading it with `curl` as above works
+as is. If you download it in a browser, macOS blocks it until you run
+`xattr -d com.apple.quarantine ~/.local/bin/syncaidync`.
+
+**From source.** With a stable Rust toolchain:
 
 ```sh
 cargo install --git https://github.com/cfcomputing/syncaidync --locked syncaidync
